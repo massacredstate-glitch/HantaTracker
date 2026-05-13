@@ -968,24 +968,19 @@ function initHeader() {
 
 async function loadTicker() {
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{
-          role: 'user',
-          content: `Search for the very latest news updates (today or this week) on the Hantavirus MV Hondius cruise ship outbreak from WHO, CDC, Reuters, or other major health authorities as of May 2026. Return ONLY a JSON array of 10-14 short ticker strings (each under 120 characters), no markdown, no preamble, no backticks. Format: ["item1","item2",...] Each item should be a factual news flash sentence about the outbreak.`
-        }]
-      })
-    });
-    const data = await response.json();
-    const textBlocks = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
-    const match = textBlocks.match(/\[[\s\S]*?\]/);
-    if (match) {
-      const items = JSON.parse(match[0]);
+    const feeds = [
+      'https://www.who.int/rss-feeds/news-releases-en.xml',
+      'https://tools.cdc.gov/api/v2/resources/media/132608.rss'
+    ];
+    const results = await Promise.any(feeds.map(rss =>
+      fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rss)}&count=20`)
+        .then(r => r.json())
+    ));
+    if (results.status === 'ok' && results.items?.length) {
+      const items = results.items
+        .map(i => i.title.trim())
+        .filter(t => t.length > 0)
+        .slice(0, 14);
       renderTicker(items);
     } else {
       renderTicker(fallbackTicker);
