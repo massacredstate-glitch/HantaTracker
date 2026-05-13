@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLOBAL HEALTH ALERT — Hantavirus Outbreak 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #050a12;
+    --bg-mid: #080f1a;
+    --bg-surface: #0d1626;
+    --bg-card: #101d30;
+    --accent-blue: #3a8fc9;
+    --accent-cyan: #1ecbe1;
+    --accent-steel: #5b8db8;
+    --accent-dim: #2a5580;
+    --text-primary: #a8cfe8;
+    --text-secondary: #6a9abf;
+    --text-dim: #3d6a8a;
+    --text-bright: #cce4f5;
+    --danger: #c94040;
+    --danger-dim: #7a2020;
+    --border: rgba(58, 143, 201, 0.2);
+    --border-bright: rgba(58, 143, 201, 0.5);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  #globe-canvas {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .scan-line {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  #ticker-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 36px;
+    background: rgba(5,10,18,0.97);
+    border-bottom: 1px solid var(--accent-blue);
+    display: flex;
+    align-items: center;
+    z-index: 100;
+    overflow: hidden;
+  }
+
+  .ticker-label {
+    flex-shrink: 0;
+    background: var(--danger);
+    color: #fff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 0 14px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    border-right: 1px solid var(--danger-dim);
+  }
+
+  .ticker-scroll-wrap {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+  }
+
+  .ticker-scroll {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    white-space: nowrap;
+    animation: ticker-move 90s linear infinite;
+  }
+
+  .ticker-scroll.paused { animation-play-state: paused; }
+
+  .ticker-item {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11.5px;
+    color: var(--accent-cyan);
+    padding: 0 40px;
+    letter-spacing: 0.5px;
+  }
+
+  .ticker-item::before {
+    content: '◆';
+    color: var(--accent-blue);
+    margin-right: 14px;
+    font-size: 8px;
+    vertical-align: middle;
+  }
+
+  @keyframes ticker-move {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .ticker-loading {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-steel);
+    padding: 0 20px;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  main {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 70px 24px 80px;
+  }
+
+  header {
+    text-align: center;
+    padding: 40px 0 50px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .broadcast-tag {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--danger);
+    border: 1px solid var(--danger-dim);
+    padding: 4px 16px;
+    margin-bottom: 20px;
+    animation: pulse-border 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-border {
+    0%, 100% { border-color: var(--danger-dim); }
+    50% { border-color: var(--danger); }
+  }
+
+  h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 52px);
+    color: var(--text-bright);
+    letter-spacing: 3px;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  h1 span.hl { color: var(--accent-cyan); }
+
+  .dateline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 14px;
+    letter-spacing: 2px;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent-blue);
+  }
+
+  .stat-card.danger::before { background: var(--danger); }
+  .stat-card.warn::before { background: #c98a3a; }
+  .stat-card.active::before { background: var(--accent-cyan); }
+
+  .stat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    color: var(--text-bright);
+    line-height: 1;
+  }
+
+  .stat-card.danger .stat-value { color: #e05555; }
+  .stat-card.warn .stat-value { color: #d4a050; }
+  .stat-card.active .stat-value { color: var(--accent-cyan); }
+
+  .stat-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  .section-head {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent-blue);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin-bottom: 24px;
+  }
+
+  .section-head::before {
+    content: '// ';
+    color: var(--text-dim);
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 60px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent-blue), transparent);
+  }
+
+  .t-entry {
+    position: relative;
+    margin-bottom: 0;
+    padding: 0;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .t-entry.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .t-entry::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 18px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    border: 1px solid var(--bg-deep);
+  }
+
+  .t-entry.fatal::before { background: var(--danger); }
+  .t-entry.alert::before { background: var(--accent-cyan); }
+
+  .t-inner {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent-dim);
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    cursor: default;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .t-entry.fatal .t-inner { border-left-color: var(--danger-dim); }
+  .t-entry.alert .t-inner { border-left-color: var(--accent-cyan); }
+
+  .t-inner:hover {
+    background: #121f35;
+    border-color: var(--border-bright);
+  }
+
+  .t-date {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+  }
+
+  .t-category {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--accent-steel);
+    background: rgba(58, 143, 201, 0.1);
+    border: 1px solid rgba(58, 143, 201, 0.2);
+    padding: 2px 8px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .t-entry.fatal .t-category {
+    color: #c06060;
+    background: rgba(201, 64, 64, 0.1);
+    border-color: rgba(201, 64, 64, 0.25);
+  }
+
+  .t-entry.alert .t-category {
+    color: var(--accent-cyan);
+    background: rgba(30, 203, 225, 0.08);
+    border-color: rgba(30, 203, 225, 0.2);
+  }
+
+  .t-location {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-bright);
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .t-detail {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .t-source {
+    margin-top: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .t-source a {
+    color: var(--accent-blue);
+    text-decoration: none;
+  }
+
+  .t-source a:hover { color: var(--accent-cyan); }
+
+  .status-badge {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    float: right;
+  }
+
+  .status-deceased { background: rgba(201, 64, 64, 0.15); color: #e06060; border: 1px solid rgba(201, 64, 64, 0.3); }
+  .status-confirmed { background: rgba(30, 203, 225, 0.1); color: var(--accent-cyan); border: 1px solid rgba(30, 203, 225, 0.25); }
+  .status-monitoring { background: rgba(201, 138, 58, 0.1); color: #d4a050; border: 1px solid rgba(201, 138, 58, 0.25); }
+  .status-alert { background: rgba(91, 141, 184, 0.1); color: var(--accent-steel); border: 1px solid rgba(91, 141, 184, 0.25); }
+
+  .risk-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent-steel);
+    padding: 24px 28px;
+    margin-bottom: 48px;
+  }
+
+  .risk-box p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 10px;
+  }
+
+  .risk-box p:last-child { margin-bottom: 0; }
+
+  .risk-box strong {
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+
+  .type-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--accent-cyan);
+    vertical-align: middle;
+    animation: blink 0.8s step-end infinite;
+  }
+
+  footer {
+    text-align: center;
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+  }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 26px; }
+    .stat-value { font-size: 24px; }
+  }
+
+  /* NAV TABS */
+  #page-nav {
+    position: fixed;
+    top: 36px;
+    left: 0; right: 0;
+    height: 44px;
+    background: rgba(8,15,26,0.97);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: stretch;
+    z-index: 99;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .nav-tab {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0 32px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .nav-tab:hover { color: var(--text-secondary); }
+
+  .nav-tab.active {
+    color: var(--accent-cyan);
+    border-bottom-color: var(--accent-cyan);
+  }
+
+  /* PAGE VIEWS */
+  .page-view { display: none; }
+  .page-view.active { display: block; }
+
+  main {
+    padding-top: 100px !important;
+  }
+
+  /* SUBMISSION FORM */
+  .submit-wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+  }
+
+  .submit-intro {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-cyan);
+    padding: 20px 24px;
+    margin-bottom: 36px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
+
+  .submit-intro strong { color: var(--text-bright); }
+
+  .preview-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent-dim);
+    padding: 16px 20px;
+    margin-bottom: 36px;
+    transition: border-color 0.3s;
+  }
+
+  .preview-block.has-data { border-left-color: var(--accent-cyan); }
+
+  .preview-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .preview-date { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1.5px; margin-bottom: 4px; }
+  .preview-cat { display: inline-block; font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: var(--accent-steel); background: rgba(58,143,201,0.1); border: 1px solid rgba(58,143,201,0.2); padding: 2px 8px; margin-bottom: 8px; text-transform: uppercase; }
+  .preview-loc { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 15px; color: var(--text-bright); margin-bottom: 6px; }
+  .preview-detail { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .preview-src { margin-top: 8px; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); }
+  .preview-empty { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-dim); font-style: italic; }
+
+  .field-group {
+    margin-bottom: 22px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  @media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+
+  .field-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .field-label span { color: var(--danger); margin-left: 2px; }
+
+  .field-input,
+  .field-select,
+  .field-textarea {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  .field-input::placeholder,
+  .field-textarea::placeholder { color: var(--text-dim); font-size: 12px; }
+
+  .field-input:focus,
+  .field-select:focus,
+  .field-textarea:focus {
+    border-color: var(--accent-blue);
+    background: #0d1828;
+  }
+
+  .field-select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%233a8fc9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+
+  .field-select option {
+    background: #0d1626;
+    color: var(--text-primary);
+  }
+
+  .field-textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+  .field-hint {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-top: 5px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--accent-blue);
+    color: var(--accent-cyan);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 16px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn:hover {
+    background: rgba(58,143,201,0.1);
+    border-color: var(--accent-cyan);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .submit-btn .btn-sending {
+    display: none;
+    animation: blink 0.8s step-end infinite;
+  }
+
+  .submit-btn.sending .btn-label { display: none; }
+  .submit-btn.sending .btn-sending { display: inline; }
+
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--accent-cyan);
+    padding: 14px 28px;
+    z-index: 200;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s;
+    opacity: 0;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast.error { color: #e06060; border-color: var(--danger-dim); }
+
+  .field-error {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: #e06060;
+    letter-spacing: 1px;
+    margin-top: 5px;
+    display: none;
+  }
+
+  .field-input.invalid,
+  .field-select.invalid,
+  .field-textarea.invalid { border-color: var(--danger); }
+</style>
+</head>
+<body>
+
+<div class="scan-line"></div>
+
+<canvas id="globe-canvas" width="700" height="700"></canvas>
+
+<div id="ticker-bar">
+  <div class="ticker-label">⬤ LIVE FEED</div>
+  <div class="ticker-scroll-wrap" id="ticker-wrap">
+    <div class="ticker-loading" id="ticker-loading">FETCHING LIVE HEALTH INTELLIGENCE...</div>
+    <div class="ticker-scroll" id="ticker-scroll" style="display:none;"></div>
+  </div>
+</div>
+
+<div id="page-nav">
+  <button class="nav-tab active" onclick="switchTab('outbreak')">◈ OUTBREAK REPORT</button>
+  <button class="nav-tab" onclick="switchTab('submit')">⊕ SUBMIT INTELLIGENCE</button>
+</div>
+
+<div id="view-outbreak" class="page-view active">
+<main>
+  <header>
+    <div class="broadcast-tag">HEALTH EMERGENCY BROADCAST</div>
+    <h1 id="main-title"></h1>
+    <div class="dateline" id="dateline"></div>
+  </header>
+
+  <div class="stat-grid">
+    <div class="stat-card danger">
+      <div class="stat-label">Deaths</div>
+      <div class="stat-value">3</div>
+      <div class="stat-sub">Confirmed fatalities</div>
+    </div>
+    <div class="stat-card active">
+      <div class="stat-label">Confirmed</div>
+      <div class="stat-value">9</div>
+      <div class="stat-sub">Laboratory confirmed</div>
+    </div>
+    <div class="stat-card warn">
+      <div class="stat-label">Under Watch</div>
+      <div class="stat-value">~40</div>
+      <div class="stat-sub">Exposed &amp; dispersed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Exposed Pool</div>
+      <div class="stat-value">147</div>
+      <div class="stat-sub">Passengers &amp; crew</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pathogen</div>
+      <div class="stat-value" style="font-size:18px; padding-top:6px;">Andes</div>
+      <div class="stat-sub">Hantavirus strain</div>
+    </div>
+    <div class="stat-card active">
+      <div class="stat-label">Nations Affected</div>
+      <div class="stat-value">8+</div>
+      <div class="stat-sub">Active monitoring</div>
+    </div>
+  </div>
+
+  <div class="section-head">OUTBREAK TIMELINE — MV HONDIUS 2026</div>
+
+  <div class="timeline" id="timeline"></div>
+
+  <div class="section-head">RISK ASSESSMENT</div>
+  <div class="risk-box">
+    <p><strong>Public Risk Level: LOW</strong> — The WHO and CDC continue to assess the overall risk to the general public as low. No evidence of sustained community transmission has been identified as of May 13, 2026.</p>
+    <p><strong>Transmission:</strong> The Andes strain is among the very few hantaviruses with documented person-to-person transmission in close-contact settings. Spread is not airborne over long distances. Standard contact/droplet precautions are in effect for confirmed cases.</p>
+    <p><strong>Ongoing Concern:</strong> The WHO has warned nations to prepare for additional cases due to the virus's long incubation period (7–39 days) and the fact that approximately 40 potentially exposed individuals dispersed internationally before full contact tracing was initiated.</p>
+  </div>
+
+  <footer>
+    GLOBAL HEALTH MONITOR ▸ HANTAVIRUS SPECIAL REPORT ▸ COMPILED MAY 13, 2026 ▸ SOURCES: WHO · CDC · REUTERS · THE GUARDIAN · ABC AUSTRALIA
+  </footer>
+</main>
+</div><!-- end view-outbreak -->
+
+<div id="view-submit" class="page-view">
+<main>
+  <header>
+    <div class="broadcast-tag">INTELLIGENCE SUBMISSION</div>
+    <h1 style="font-size: clamp(22px, 4vw, 40px);">SUBMIT TIMELINE <span class="hl">ENTRY</span></h1>
+    <div class="dateline">FIELD REPORTS · VERIFIED SOURCES · SECURE TRANSMISSION</div>
+  </header>
+
+  <div class="submit-wrap">
+
+    <div class="submit-intro">
+      <strong>Field Intelligence Protocol</strong> — Submit new outbreak events, case confirmations, or official health authority updates for inclusion in the Hantavirus 2026 timeline. All submissions are transmitted to the editorial desk for review. Match the format of existing timeline entries as closely as possible. Fields marked <span style="color:var(--danger)">*</span> are required.
+    </div>
+
+    <div class="section-head">LIVE ENTRY PREVIEW</div>
+
+    <div class="preview-block" id="preview-block">
+      <div class="preview-label">// PREVIEW — HOW YOUR ENTRY WILL APPEAR</div>
+      <div id="preview-content">
+        <div class="preview-empty">Fill in the fields below to preview your timeline entry...</div>
+      </div>
+    </div>
+
+    <div class="section-head">ENTRY FIELDS</div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label" for="f-date">Date <span>*</span></label>
+        <input class="field-input" id="f-date" type="text" placeholder="e.g. MAY 14, 2026" maxlength="30" />
+        <div class="field-hint">Format: MON. DD, YYYY</div>
+        <div class="field-error" id="err-date">Date is required</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-cat">Category <span>*</span></label>
+        <input class="field-input" id="f-cat" type="text" placeholder="e.g. Confirmed Case, WHO Alert" maxlength="60" />
+        <div class="field-hint">Short descriptive label</div>
+        <div class="field-error" id="err-cat">Category is required</div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label" for="f-loc">Location <span>*</span></label>
+        <input class="field-input" id="f-loc" type="text" placeholder="e.g. Berlin, Germany" maxlength="80" />
+        <div class="field-hint">City, Region, Country or Multi-country</div>
+        <div class="field-error" id="err-loc">Location is required</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-status">Status / Classification <span>*</span></label>
+        <select class="field-select" id="f-status">
+          <option value="">— Select status —</option>
+          <option value="confirmed positive">Confirmed Positive</option>
+          <option value="symptomatic onset">Symptomatic Onset</option>
+          <option value="deceased">Deceased</option>
+          <option value="monitoring">Monitoring / Exposure</option>
+          <option value="isolation/monitoring">Isolation / Monitoring</option>
+          <option value="international alert">International Alert</option>
+          <option value="preparedness alert">Preparedness Alert</option>
+          <option value="repatriation">Repatriation / Evacuation</option>
+          <option value="quarantine/monitoring">Quarantine / Monitoring</option>
+          <option value="dispersal">Passenger Dispersal</option>
+          <option value="other">Other</option>
+        </select>
+        <div class="field-error" id="err-status">Status is required</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="f-detail">Event Details <span>*</span></label>
+      <textarea class="field-textarea" id="f-detail" placeholder="Describe the event clearly and factually. Include case counts, authority names, and relevant medical context where known." maxlength="600"></textarea>
+      <div class="field-hint">Max 600 characters · Factual, third-person, present-to-past tense</div>
+      <div class="field-error" id="err-detail">Details are required</div>
+    </div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label" for="f-source">Source Name <span>*</span></label>
+        <input class="field-input" id="f-source" type="text" placeholder="e.g. WHO, Reuters, CDC" maxlength="80" />
+        <div class="field-hint">Publication or authority name</div>
+        <div class="field-error" id="err-source">Source name is required</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-url">Source URL <span>*</span></label>
+        <input class="field-input" id="f-url" type="url" placeholder="https://..." maxlength="300" />
+        <div class="field-hint">Direct link to the source report</div>
+        <div class="field-error" id="err-url">Source URL is required</div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label" for="f-severity">Entry Type</label>
+        <select class="field-select" id="f-severity">
+          <option value="default">Standard Update</option>
+          <option value="alert">Confirmed Case / Alert</option>
+          <option value="fatal">Fatal / Critical</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-reporter">Your Name / Handle</label>
+        <input class="field-input" id="f-reporter" type="text" placeholder="Anonymous" maxlength="60" />
+        <div class="field-hint">Optional — for editorial tracking only</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="f-notes">Additional Notes</label>
+      <textarea class="field-textarea" id="f-notes" placeholder="Any additional context, caveats, or related entries this should be linked to..." maxlength="400" style="min-height:70px;"></textarea>
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitEntry()">
+      <span class="btn-label">⬢ TRANSMIT ENTRY TO EDITORIAL DESK</span>
+      <span class="btn-sending">TRANSMITTING...</span>
+    </button>
+
+  </div>
+</main>
+</div><!-- end view-submit -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+const timelineData = [
+  { date:"APR. 6, 2026", cat:"Initial Symptomatic Case", loc:"MV Hondius", status:"symptomatic onset", detail:"First passenger reportedly began showing symptoms aboard the ship.", source:"WHO Outbreak Summary", url:"https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON600", type:"default" },
+  { date:"APR. 11, 2026", cat:"Fatal Case", loc:"MV Hondius — At Sea", status:"deceased", detail:"First passenger died aboard ship; initially attributed to natural causes.", source:"Wikipedia — MV Hondius Outbreak", url:"https://en.wikipedia.org/wiki/MV_Hondius_hantavirus_outbreak", type:"fatal" },
+  { date:"APR. 24, 2026", cat:"Exposure Dispersal Event", loc:"Saint Helena, South Atlantic", status:"dispersal", detail:"Approximately 30–34 passengers and crew disembarked before the full outbreak was recognized and contact tracing was escalated.", source:"WHO Outbreak Summary", url:"https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON600", type:"default" },
+  { date:"APR. 26, 2026", cat:"Fatal Case", loc:"Johannesburg, South Africa", status:"deceased", detail:"Wife of the first victim died after emergency evacuation from Saint Helena to Johannesburg.", source:"Wikipedia — MV Hondius Outbreak", url:"https://en.wikipedia.org/wiki/MV_Hondius_hantavirus_outbreak", type:"fatal" },
+  { date:"MAY 2, 2026", cat:"Fatal Case", loc:"MV Hondius — At Sea", status:"deceased", detail:"Third passenger death occurred aboard the vessel.", source:"Wikipedia — MV Hondius Outbreak", url:"https://en.wikipedia.org/wiki/MV_Hondius_hantavirus_outbreak", type:"fatal" },
+  { date:"MAY 2, 2026", cat:"WHO International Alert", loc:"Multi-country", status:"international alert", detail:"WHO formally notified of a severe respiratory illness cluster aboard the ship.", source:"WHO Disease Outbreak News", url:"https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON600", type:"alert" },
+  { date:"MAY 4, 2026", cat:"First Lab Confirmation", loc:"MV Hondius", status:"confirmed positive", detail:"First laboratory confirmation of Andes hantavirus received.", source:"Wikipedia — MV Hondius Outbreak", url:"https://en.wikipedia.org/wiki/MV_Hondius_hantavirus_outbreak", type:"alert" },
+  { date:"MAY 6, 2026", cat:"Medical Evacuation", loc:"Nijmegen, Netherlands", status:"isolation/monitoring", detail:"Three additional ill individuals, including the ship's doctor, were evacuated to the Netherlands.", source:"Wikipedia — MV Hondius Outbreak", url:"https://en.wikipedia.org/wiki/MV_Hondius_hantavirus_outbreak", type:"default" },
+  { date:"MAY 7, 2026", cat:"U.S. Exposure Monitoring", loc:"Texas, USA", status:"monitoring", detail:"CDC notified Texas health authorities about two state residents linked to the outbreak exposure.", source:"Reuters", url:"https://www.reuters.com/business/healthcare-pharmaceuticals/us-cdc-notifies-texas-two-state-residents-cruise-ship-with-hantavirus-outbreak-2026-05-07/", type:"default" },
+  { date:"MAY 7, 2026", cat:"Multi-State U.S. Monitoring", loc:"United States (3+ states)", status:"monitoring", detail:"CDC confirmed it was monitoring people in at least three U.S. states connected to ship exposure.", source:"Reuters", url:"https://www.reuters.com/business/healthcare-pharmaceuticals/people-least-3-us-states-being-monitored-potential-hantavirus-after-being-dutch-2026-05-07/", type:"default" },
+  { date:"MAY 8, 2026", cat:"WHO Outbreak Tally", loc:"Multi-country", status:"6 confirmed / 2 probable", detail:"WHO announced six confirmed and two probable cases tied to the vessel. Additional suspected cases reported in Spain and Tristan da Cunha.", source:"Reuters", url:"https://www.reuters.com/business/healthcare-pharmaceuticals/who-reports-six-confirmed-hantavirus-cases-tied-spain-bound-cruise-2026-05-08/", type:"alert" },
+  { date:"MAY 10, 2026", cat:"Mass Disembarkation", loc:"Tenerife, Canary Islands, Spain", status:"repatriation", detail:"Major repatriation and evacuation operation began. A French passenger was transferred to Paris and later entered critical care.", source:"Reuters", url:"https://www.reuters.com/pictures/last-six-passengers-leave-hantavirus-hit-ship-2026-05-11/", type:"default" },
+  { date:"MAY 11, 2026", cat:"Confirmed U.S. Positive", loc:"Nebraska, USA", status:"confirmed positive", detail:"An American passenger was transferred to the University of Nebraska Medical Center's specialized biocontainment unit.", source:"Reuters", url:"https://www.reuters.com/business/healthcare-pharmaceuticals/us-says-18-passengers-flown-back-after-hantavirus-outbreak-ship-2026-05-11/", type:"alert" },
+  { date:"MAY 11, 2026", cat:"Symptomatic U.S. Contact", loc:"Atlanta, Georgia, USA", status:"symptomatic/monitoring", detail:"One monitored American at Emory's biocontainment unit developed mild symptoms. A second U.S. citizen tested mildly positive.", source:"Reuters", url:"https://www.reuters.com/business/healthcare-pharmaceuticals/us-says-18-passengers-flown-back-after-hantavirus-outbreak-ship-2026-05-11/", type:"default" },
+  { date:"MAY 11, 2026", cat:"WHO Updated Tally", loc:"Global", status:"7 confirmed / 9 reported", detail:"WHO updated the global confirmed case count to seven, with nine total cases reported.", source:"Reuters — WHO Update", url:"https://www.reuters.com/business/healthcare-pharmaceuticals/who-says-seven-cases-hantavirus-confirmed-cruise-ship-2026-05-11/", type:"alert" },
+  { date:"MAY 12, 2026", cat:"Healthcare Exposure Incident", loc:"Nijmegen, Netherlands", status:"quarantine/monitoring", detail:"Twelve healthcare workers placed in isolation after an accidental protocol breach while handling laboratory samples.", source:"The Guardian", url:"https://www.theguardian.com/world/2026/may/12/who-head-warns-countries-prepare-more-hantavirus-cases", type:"default" },
+  { date:"MAY 12, 2026", cat:"UK Precautionary Isolation", loc:"United Kingdom", status:"isolation", detail:"UK transferred 10 exposed individuals — including passengers and medical staff — for precautionary isolation.", source:"Reuters", url:"https://www.reuters.com/business/healthcare-pharmaceuticals/britain-bring-10-people-uk-precautionary-isolation-after-hantavirus-outbreak-2026-05-12/", type:"default" },
+  { date:"MAY 12, 2026", cat:"Spanish Confirmed Case", loc:"Madrid, Spain", status:"confirmed positive", detail:"Spain confirmed an evacuated passenger tested positive while quarantined at a military hospital.", source:"ABC Australia", url:"https://www.abc.net.au/news/2026-05-13/hantavirus-isolation-orders-hospital-staff-remote-islanders/106673132", type:"alert" },
+  { date:"MAY 12, 2026", cat:"WHO Global Warning", loc:"Global", status:"preparedness alert", detail:"WHO Director-General warned countries to prepare for additional cases, citing the long incubation period of 7–39 days and multiple international exposure chains.", source:"The Guardian", url:"https://www.theguardian.com/world/2026/may/12/who-head-warns-countries-prepare-more-hantavirus-cases", type:"alert" },
+  { date:"MAY 13, 2026", cat:"Expanded Tally", loc:"Multi-country", status:"9 confirmed / 3 deaths", detail:"At least nine confirmed infections now tied to the outbreak with three fatalities. Contact tracing and legal analysis of cruise operator liability continues internationally.", source:"Reuters", url:"https://www.reuters.com/business/healthcare-pharmaceuticals/could-cruise-ship-passengers-sue-over-hantavirus-outbreak-2026-05-13/", type:"alert" },
+];
+
+function getStatusBadgeClass(s) {
+  s = s.toLowerCase();
+  if (s.includes('deceased')) return 'status-deceased';
+  if (s.includes('confirmed')) return 'status-confirmed';
+  if (s.includes('monitoring') || s.includes('isolation') || s.includes('repatriation') || s.includes('dispersal') || s.includes('alert')) return 'status-monitoring';
+  return 'status-alert';
+}
+
+function buildTimeline() {
+  const tl = document.getElementById('timeline');
+  timelineData.forEach((e, i) => {
+    const div = document.createElement('div');
+    div.className = 't-entry' + (e.type === 'fatal' ? ' fatal' : e.type === 'alert' ? ' alert' : '');
+    div.style.transitionDelay = (i * 0.04) + 's';
+    const badgeClass = getStatusBadgeClass(e.status);
+    div.innerHTML = `
+      <div class="t-inner">
+        <div class="t-date">${e.date}</div>
+        <span class="t-category">${e.cat}</span>
+        <span class="status-badge ${badgeClass}">${e.status}</span>
+        <div class="t-location">${e.loc}</div>
+        <div class="t-detail">${e.detail}</div>
+        <div class="t-source">SRC: <a href="${e.url}" target="_blank">${e.source}</a></div>
+      </div>`;
+    tl.appendChild(div);
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.05 });
+
+  document.querySelectorAll('.t-entry').forEach(el => observer.observe(el));
+}
+
+function typeWriter(el, text, speed, cb) {
+  let i = 0;
+  function tick() {
+    if (i < text.length) {
+      el.textContent += text[i++];
+      setTimeout(tick, speed);
+    } else if (cb) cb();
+  }
+  tick();
+}
+
+function initHeader() {
+  const title = document.getElementById('main-title');
+  title.innerHTML = '';
+  const line1 = 'ANDES HANTAVIRUS';
+  const line2 = 'GLOBAL OUTBREAK 2026';
+  typeWriter(title, line1, 55, () => {
+    title.innerHTML = line1 + '<br><span class="hl">' ;
+    const span = title.querySelector('.hl');
+    typeWriter(span, line2, 45, null);
+  });
+  const dl = document.getElementById('dateline');
+  setTimeout(() => {
+    typeWriter(dl, 'FILED: WEDNESDAY, MAY 13 2026  //  MV HONDIUS  //  MULTI-COUNTRY INCIDENT', 18, null);
+  }, 1800);
+}
+
+async function loadTicker() {
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: `Search for the very latest news updates (today or this week) on the Hantavirus MV Hondius cruise ship outbreak from WHO, CDC, Reuters, or other major health authorities as of May 2026. Return ONLY a JSON array of 10-14 short ticker strings (each under 120 characters), no markdown, no preamble, no backticks. Format: ["item1","item2",...] Each item should be a factual news flash sentence about the outbreak.`
+        }]
+      })
+    });
+    const data = await response.json();
+    const textBlocks = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    const match = textBlocks.match(/\[[\s\S]*?\]/);
+    if (match) {
+      const items = JSON.parse(match[0]);
+      renderTicker(items);
+    } else {
+      renderTicker(fallbackTicker);
+    }
+  } catch(e) {
+    renderTicker(fallbackTicker);
+  }
+}
+
+const fallbackTicker = [
+  "WHO: 9 confirmed Andes hantavirus cases linked to MV Hondius cruise — 3 fatalities as of May 13, 2026",
+  "CDC monitoring individuals in at least 3 U.S. states following MV Hondius exposure",
+  "12 Dutch healthcare workers isolated after lab protocol breach involving hantavirus samples — Nijmegen, Netherlands",
+  "Spain confirms evacuated MV Hondius passenger tests positive — quarantined at Madrid military hospital",
+  "WHO Director-General warns nations to prepare for additional cases due to 7–39 day incubation window",
+  "U.S. patient transferred to UNMC biocontainment unit in Nebraska following confirmation",
+  "UK brings 10 exposed individuals including passengers and medical staff into precautionary isolation",
+  "Andes strain is one of the few hantaviruses with documented person-to-person transmission capability",
+  "~147 total passengers and crew included in the MV Hondius exposure investigation",
+  "French evacuee transferred to Paris hospital enters critical care following positive Andes hantavirus test",
+  "WHO & CDC: No evidence of sustained community transmission — overall public risk remains LOW",
+  "Approx. 40 potentially exposed individuals dispersed internationally before full contact tracing initiated",
+  "Tristan da Cunha: suspected case reported on remote South Atlantic island with links to ship contact",
+  "MV Hondius fully evacuated in Tenerife, Canary Islands — ship under investigation and decontamination"
+];
+
+function renderTicker(items) {
+  document.getElementById('ticker-loading').style.display = 'none';
+  const scroll = document.getElementById('ticker-scroll');
+  scroll.style.display = 'flex';
+  const doubled = [...items, ...items];
+  scroll.innerHTML = doubled.map(i => `<span class="ticker-item">${i}</span>`).join('');
+  scroll.style.animation = 'none';
+  scroll.offsetHeight;
+  scroll.style.animation = '';
+}
+
+function drawGlobe() {
+  const canvas = document.getElementById('globe-canvas');
+  const ctx = canvas.getContext('2d');
+  const cx = 350, cy = 350, r = 280;
+  let angle = 0;
+
+  function frame() {
+    ctx.clearRect(0, 0, 700, 700);
+    ctx.strokeStyle = '#3a8fc9';
+    ctx.lineWidth = 0.6;
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.stroke();
+
+    const latLines = 9;
+    for (let i = 1; i < latLines; i++) {
+      const lat = (i / latLines) * Math.PI - Math.PI / 2;
+      const ry = Math.cos(lat) * r;
+      const yOff = Math.sin(lat) * r;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + yOff, ry, ry * 0.15, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    const lonLines = 12;
+    for (let i = 0; i < lonLines; i++) {
+      const a = (i / lonLines) * Math.PI + angle;
+      const cosA = Math.cos(a);
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, Math.abs(cosA) * r, r, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    angle += 0.003;
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+drawGlobe();
+initHeader();
+buildTimeline();
+loadTicker();
+
+/* TAB SWITCHING */
+function switchTab(tab) {
+  document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+/* LIVE PREVIEW */
+const previewFields = ['f-date','f-cat','f-loc','f-status','f-detail','f-source','f-url'];
+previewFields.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updatePreview);
+  if (el && el.tagName === 'SELECT') el.addEventListener('change', updatePreview);
+});
+
+function updatePreview() {
+  const date = document.getElementById('f-date').value.trim().toUpperCase();
+  const cat = document.getElementById('f-cat').value.trim();
+  const loc = document.getElementById('f-loc').value.trim();
+  const status = document.getElementById('f-status').value;
+  const detail = document.getElementById('f-detail').value.trim();
+  const source = document.getElementById('f-source').value.trim();
+  const url = document.getElementById('f-url').value.trim();
+  const block = document.getElementById('preview-block');
+  const content = document.getElementById('preview-content');
+
+  const hasData = date || cat || loc || detail;
+  block.classList.toggle('has-data', !!hasData);
+
+  if (!hasData) {
+    content.innerHTML = '<div class="preview-empty">Fill in the fields below to preview your timeline entry...</div>';
+    return;
+  }
+
+  const badgeClass = getStatusBadgeClass(status || '');
+  content.innerHTML = `
+    ${date ? `<div class="preview-date">${date}</div>` : ''}
+    ${cat ? `<span class="preview-cat">${cat}</span>` : ''}
+    ${status ? `<span class="status-badge ${badgeClass}" style="float:right">${status}</span>` : ''}
+    ${loc ? `<div class="preview-loc">${loc}</div>` : ''}
+    ${detail ? `<div class="preview-detail">${detail}</div>` : ''}
+    ${source ? `<div class="preview-src">SRC: ${url ? `<a href="${url}" target="_blank">${source}</a>` : source}</div>` : ''}
+  `;
+}
+
+/* VALIDATION */
+function validate() {
+  const required = [
+    { id: 'f-date', err: 'err-date' },
+    { id: 'f-cat', err: 'err-cat' },
+    { id: 'f-loc', err: 'err-loc' },
+    { id: 'f-status', err: 'err-status' },
+    { id: 'f-detail', err: 'err-detail' },
+    { id: 'f-source', err: 'err-source' },
+    { id: 'f-url', err: 'err-url' },
+  ];
+  let valid = true;
+  required.forEach(({ id, err }) => {
+    const el = document.getElementById(id);
+    const errEl = document.getElementById(err);
+    const empty = !el.value.trim();
+    el.classList.toggle('invalid', empty);
+    errEl.style.display = empty ? 'block' : 'none';
+    if (empty) valid = false;
+  });
+  return valid;
+}
+
+/* TOAST */
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isError ? ' error' : '') + ' show';
+  setTimeout(() => { t.className = 'toast' + (isError ? ' error' : ''); }, 4000);
+}
+
+/* EMAILJS SUBMISSION */
+(function() {
+  if (window.emailjs) emailjs.init({ publicKey: 'YOUR_EMAILJS_PUBLIC_KEY' });
+})();
+
+async function submitEntry() {
+  if (!validate()) {
+    showToast('▲ COMPLETE REQUIRED FIELDS BEFORE TRANSMITTING', true);
+    return;
+  }
+
+  const btn = document.getElementById('submit-btn');
+  btn.classList.add('sending');
+  btn.disabled = true;
+
+  const payload = {
+    entry_date:     document.getElementById('f-date').value.trim().toUpperCase(),
+    entry_category: document.getElementById('f-cat').value.trim(),
+    entry_location: document.getElementById('f-loc').value.trim(),
+    entry_status:   document.getElementById('f-status').value,
+    entry_detail:   document.getElementById('f-detail').value.trim(),
+    entry_source:   document.getElementById('f-source').value.trim(),
+    entry_url:      document.getElementById('f-url').value.trim(),
+    entry_type:     document.getElementById('f-severity').value,
+    reporter:       document.getElementById('f-reporter').value.trim() || 'Anonymous',
+    notes:          document.getElementById('f-notes').value.trim() || 'None',
+    to_email:       'massacredstate@gmail.com',
+    submitted_at:   new Date().toUTCString(),
+  };
+
+  try {
+    if (window.emailjs && emailjs.send) {
+      await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', payload);
+      handleSuccess(btn);
+    } else {
+      await fallbackMailto(payload);
+      handleSuccess(btn);
+    }
+  } catch(e) {
+    fallbackMailto(payload);
+    handleSuccess(btn);
+  }
+}
+
+function handleSuccess(btn) {
+  btn.classList.remove('sending');
+  btn.disabled = false;
+  showToast('✓ ENTRY TRANSMITTED SUCCESSFULLY', false);
+  ['f-date','f-cat','f-loc','f-status','f-detail','f-source','f-url','f-severity','f-reporter','f-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = el.tagName === 'SELECT' ? el.options[0].value : ''; el.classList.remove('invalid'); }
+  });
+  updatePreview();
+}
+
+function fallbackMailto(p) {
+  const body = `HANTAVIRUS OUTBREAK 2026 — TIMELINE ENTRY SUBMISSION
+========================================================
+Submitted: ${p.submitted_at}
+Reporter: ${p.reporter}
+
+DATE: ${p.entry_date}
+CATEGORY: ${p.entry_category}
+LOCATION: ${p.entry_location}
+STATUS: ${p.entry_status}
+TYPE: ${p.entry_type}
+
+DETAILS:
+${p.entry_detail}
+
+SOURCE: ${p.entry_source}
+URL: ${p.entry_url}
+
+NOTES:
+${p.notes}`;
+
+  const mailto = `mailto:massacredstate@gmail.com?subject=${encodeURIComponent('HANTAVIRUS TIMELINE ENTRY: ' + p.entry_date + ' — ' + p.entry_category)}&body=${encodeURIComponent(body)}`;
+  window.open(mailto, '_blank');
+  return Promise.resolve();
+}
+</script>
+</body>
+</html>
