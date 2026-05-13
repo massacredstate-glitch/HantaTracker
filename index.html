@@ -1147,7 +1147,7 @@ function showToast(msg, isError) {
 
 /* EMAILJS SUBMISSION */
 (function() {
-  if (window.emailjs) emailjs.init({ publicKey: 'YOUR_EMAILJS_PUBLIC_KEY' });
+  if (window.emailjs) emailjs.init({ publicKey: 'C568_amaxmnUw3_X1' });
 })();
 
 async function submitEntry() {
@@ -1177,7 +1177,7 @@ async function submitEntry() {
 
   try {
     if (window.emailjs && emailjs.send) {
-      await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', payload);
+      await emailjs.send('service_ernm61v', 'template_13ut1bt', payload);
       handleSuccess(btn);
     } else {
       await fallbackMailto(payload);
